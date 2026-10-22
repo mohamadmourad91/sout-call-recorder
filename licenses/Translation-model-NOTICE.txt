@@ -1,0 +1,18 @@
+German-to-Arabic translation model
+
+Original model: Helsinki-NLP/opus-mt-de-ar
+Publisher: Helsinki-NLP / University of Helsinki OPUS-MT project
+Source: https://huggingface.co/Helsinki-NLP/opus-mt-de-ar
+Source revision: d5d9d874e996ff95c10a58bccaab541e5033022b
+Original license: Apache License, Version 2.0 (see Translation-model-Apache-2.0.txt)
+
+This distribution contains a modified representation of the original weights:
+encoder and decoder exported to ONNX (opset 17), followed by dynamic unsigned
+INT8 weight quantization. Conversion date: 2026-10-22.
+The tokenizer model, vocabulary and configuration originate from the same
+source revision. SHA-256 values of distributed assets are provided in
+Translation-model-manifest.json. The build script is build_translation_model.py
+in the accompanying source workspace.
+
+Runtime: Microsoft ONNX Runtime. Tokenizer: Microsoft.ML.Tokenizers.
+Their licenses and third-party notices are included separately.

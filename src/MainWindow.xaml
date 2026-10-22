@@ -1,0 +1,219 @@
+<Window x:Class="CallRecorder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="صوت 1.2 — تسجيل المكالمات والترجمة المباشرة" Width="860" Height="940" MinWidth="780" MinHeight="820"
+        Background="#F3F5FA" FontFamily="Segoe UI" FontSize="14" FlowDirection="RightToLeft"
+        WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Background" Value="#E9EDF5"/>
+            <Setter Property="Foreground" Value="#233047"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value><ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter Property="Opacity" Value="0.86"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.38"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate></Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="FlowDirection" Value="LeftToRight"/>
+        </Style>
+        <Style TargetType="CheckBox"><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White"/><Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Padding" Value="24"/><Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+    </Window.Resources>
+    <TabControl x:Name="MainTabs" Margin="0,10,0,0" Background="#F3F5FA" BorderThickness="0">
+    <TabControl.Resources><Style TargetType="TabItem"><Setter Property="Padding" Value="22,10"/><Setter Property="FontSize" Value="15"/><Setter Property="Foreground" Value="#172C51"/></Style></TabControl.Resources>
+    <TabItem Header="تسجيل المكالمة">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="30,24">
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="صوت" FontSize="34" FontWeight="Bold" Foreground="#172C51"/>
+                    <TextBlock Text="مسجل المكالمات على حاسوبك" Foreground="#66748B" Margin="0,3,0,0"/>
+                </StackPanel>
+                <Border Grid.Column="1" Background="#E0EAE5" CornerRadius="14" Padding="12,6" VerticalAlignment="Center">
+                    <TextBlock Text="حفظ محلي" Foreground="#2D6D50" FontSize="12"/>
+                </Border>
+            </Grid>
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Ellipse x:Name="StatusDot" Width="9" Height="9" Fill="#98A2B3" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="StatusLabel" Text="جاهز للتسجيل" Foreground="#66748B"/>
+                    </StackPanel>
+                    <TextBlock x:Name="TimerLabel" Text="00:00:00" FontSize="58" FontWeight="SemiBold" Foreground="#172C51" FlowDirection="LeftToRight" HorizontalAlignment="Center" Margin="0,8,0,6"/>
+                    <TextBlock Text="سجّل صوتك وصوت المكالمة في ملف واحد" Foreground="#66748B" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                        <Button x:Name="StartButton" Content="●  بدء التسجيل" Background="#345ADD" Foreground="White" FontSize="17" FontWeight="SemiBold" Padding="20,14" Click="Start_Click"/>
+                        <Button x:Name="StopButton" Content="■  إيقاف وحفظ" Grid.Column="2" Background="#FDE9E9" Foreground="#B73838" FontSize="17" Padding="20,14" IsEnabled="False" Click="Stop_Click"/>
+                    </Grid>
+                    <CheckBox x:Name="AutoTranscribe" Content="تحويل التسجيل إلى نص تلقائيًا بعد الإيقاف" IsChecked="True" Margin="0,14,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="مصادر الصوت" FontSize="18" FontWeight="SemiBold" Foreground="#172C51" VerticalAlignment="Center"/>
+                        <Button x:Name="RefreshButton" Grid.Column="1" Content="تحديث الأجهزة" Padding="12,6" FontSize="12" Click="Refresh_Click"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="24"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <CheckBox x:Name="UseMic" Content="الميكروفون · صوتك" IsChecked="True" Margin="0,0,0,10"/>
+                            <ComboBox x:Name="MicDevices" DisplayMemberPath="Name" ToolTip="اختر الميكروفون المستخدم في المكالمة"/>
+                            <ProgressBar x:Name="MicMeter" Height="5" Minimum="0" Maximum="1" Foreground="#345ADD" Background="#E9EDF5" Margin="0,12,0,8" FlowDirection="LeftToRight"/>
+                            <DockPanel><TextBlock Text="مستوى الصوت" Foreground="#66748B" FontSize="12"/><Slider x:Name="MicGain" Minimum="0" Maximum="2" Value="1" Width="130" FlowDirection="LeftToRight" ValueChanged="Gain_Changed"/></DockPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <CheckBox x:Name="UseSystem" Content="صوت الحاسوب · الطرف الآخر" IsChecked="True" Margin="0,0,0,10"/>
+                            <ComboBox x:Name="OutputDevices" DisplayMemberPath="Name" ToolTip="اختر السماعة أو جهاز الإخراج المستخدم في تطبيق المكالمة"/>
+                            <ProgressBar x:Name="SystemMeter" Height="5" Minimum="0" Maximum="1" Foreground="#22A892" Background="#E9EDF5" Margin="0,12,0,8" FlowDirection="LeftToRight"/>
+                            <DockPanel><TextBlock Text="مستوى الصوت" Foreground="#66748B" FontSize="12"/><Slider x:Name="SystemGain" Minimum="0" Maximum="2" Value="1" Width="130" FlowDirection="LeftToRight" ValueChanged="Gain_Changed"/></DockPanel>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="اختر جهاز الإخراج نفسه في تطبيق المكالمة. يشمل التسجيل كل الأصوات التي تعمل على هذا الجهاز. استخدم سماعة رأس لتقليل الصدى." TextWrapping="Wrap" Foreground="#66748B" FontSize="12" Margin="0,18,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="مكان حفظ التسجيلات" FontSize="17" FontWeight="SemiBold" Foreground="#172C51" VerticalAlignment="Center"/>
+                        <Button x:Name="ChooseFolderButton" Grid.Column="1" Content="تغيير" Padding="12,6" FontSize="12" Click="ChooseFolder_Click"/>
+                    </Grid>
+                    <TextBlock x:Name="FolderLabel" FlowDirection="LeftToRight" TextTrimming="CharacterEllipsis" Foreground="#66748B" Margin="0,12,0,16"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="فتح مجلد التسجيلات" Click="OpenFolder_Click" Padding="14,8"/>
+                        <Button x:Name="PlayButton" Content="تشغيل آخر تسجيل" Margin="10,0,0,0" Click="Play_Click" Padding="14,8" IsEnabled="False"/>
+                    </StackPanel>
+                    <TextBlock x:Name="ResultLabel" TextWrapping="Wrap" Foreground="#2D6D50" FontSize="12" Margin="0,12,0,0"/>
+                </StackPanel>
+            </Border>
+            <TextBlock Text="WAV  ·  48 kHz  ·  يعمل دون اتصال بالإنترنت" HorizontalAlignment="Center" Foreground="#8090A8" FontSize="12"/>
+        </StackPanel>
+    </ScrollViewer>
+    </TabItem>
+    <TabItem x:Name="TranscriptTab" Header="تحويل الصوت إلى نص">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30,24">
+                <TextBlock Text="من الصوت إلى الكلمات" FontSize="28" FontWeight="Bold" Foreground="#172C51"/>
+                <TextBlock Text="تحويل محلي على جهازك، دون رفع الملفات الصوتية." Foreground="#66748B" Margin="0,8,0,22"/>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="لغة الكلام" FontSize="17" FontWeight="SemiBold" Foreground="#172C51"/>
+                                <TextBlock Text="اختر لغة التسجيل لتحسين النتيجة" Foreground="#66748B" FontSize="12" Margin="0,6,0,0"/>
+                            </StackPanel>
+                            <ComboBox x:Name="TranscriptLanguage" Grid.Column="1" SelectedIndex="0" FlowDirection="RightToLeft">
+                                <ComboBoxItem Content="العربية" Tag="ar"/>
+                                <ComboBoxItem Content="English" Tag="en"/>
+                                <ComboBoxItem Content="Deutsch" Tag="de"/>
+                                <ComboBoxItem Content="تحديد اللغة تلقائيًا" Tag="auto"/>
+                            </ComboBox>
+                        </Grid>
+                        <WrapPanel Margin="0,22,0,12">
+                            <Button x:Name="TranscribeLastButton" Content="تحويل آخر تسجيل" Click="TranscribeLast_Click" Background="#345ADD" Foreground="White" Margin="0,0,0,8"/>
+                            <Button x:Name="ImportAudioButton" Content="اختيار ملف صوتي" Click="ImportAudio_Click" Margin="10,0,0,8"/>
+                            <Button x:Name="PrepareModelButton" Content="تجهيز نموذج اللغة" Click="PrepareModel_Click" Margin="10,0,0,8"/>
+                        </WrapPanel>
+                        <TextBlock x:Name="ModelLabel" Foreground="#66748B" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Text="عند الاستخدام لأول مرة يُنزّل نموذج بحجم 574 MB. بعدها يعمل التحويل دون إنترنت." Foreground="#66748B" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBlock x:Name="TranscriptStatus" Text="اختر تسجيلًا لتحويله إلى نص" Foreground="#172C51" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,10,0"/>
+                            <Button x:Name="CancelTranscriptButton" Grid.Column="1" Content="إلغاء التحويل" IsEnabled="False" Click="CancelTranscript_Click" Padding="12,7"/>
+                        </Grid>
+                        <ProgressBar x:Name="TranscriptProgress" Height="6" Minimum="0" Maximum="100" Foreground="#345ADD" Background="#E9EDF5" Margin="0,16,0,18" FlowDirection="LeftToRight"/>
+                        <TextBox x:Name="TranscriptTextBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="280" FontSize="17" Foreground="#233047" Background="#F8FAFD" BorderBrush="#E5EAF3" BorderThickness="1" Padding="14"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <Button x:Name="CopyTextButton" Content="نسخ النص" Click="CopyText_Click" IsEnabled="False"/>
+                            <Button x:Name="OpenTextButton" Content="فتح ملف النص" Click="OpenText_Click" IsEnabled="False" Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock x:Name="TranscriptFileLabel" Foreground="#2D6D50" TextWrapping="Wrap" FontSize="12" Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+                <TextBlock Text="يُحفظ النص بصيغتي TXT وSRT بجانب الملف الصوتي. قد يخطئ التحويل في الأسماء واللهجات أو عند تداخل الكلام؛ راجع النص قبل اعتماده." Foreground="#66748B" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
+    </TabItem>
+    <TabItem x:Name="LiveTab" Header="الترجمة المباشرة">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30,24">
+                <TextBlock Text="افهم المحادثة بالألمانية" FontSize="28" FontWeight="Bold" Foreground="#172C51"/>
+                <TextBlock Text="النص الألماني وترجمته العربية أثناء المكالمة، جملةً بجملة." Foreground="#66748B" Margin="0,8,0,22"/>
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="210"/><ColumnDefinition Width="18"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="مصدر الحديث الألماني" Foreground="#172C51" Margin="0,0,0,8"/>
+                                <ComboBox x:Name="LiveSourceKind" SelectedIndex="0" FlowDirection="RightToLeft" SelectionChanged="LiveSource_Changed">
+                                    <ComboBoxItem Content="صوت المكالمة / الحاسوب" Tag="system"/>
+                                    <ComboBoxItem Content="الميكروفون" Tag="mic"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="جهاز الصوت" Foreground="#172C51" Margin="0,0,0,8"/>
+                                    <Button x:Name="RefreshLiveButton" Grid.Column="1" Content="تحديث" Click="RefreshLive_Click" Padding="8,2" FontSize="11" Margin="0,-3,0,6"/>
+                                </Grid>
+                                <ComboBox x:Name="LiveDevices" DisplayMemberPath="Name"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,20,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="12"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <Button x:Name="StartLiveButton" Content="●  بدء الاستماع والترجمة" Background="#345ADD" Foreground="White" Click="StartLive_Click" Padding="14,13"/>
+                            <Button x:Name="StopLiveButton" Grid.Column="2" Content="■  إيقاف الترجمة" Background="#FDE9E9" Foreground="#B73838" IsEnabled="False" Click="StopLive_Click" Padding="14,13"/>
+                        </Grid>
+                        <ProgressBar x:Name="LiveMeter" Height="5" Minimum="0" Maximum="1" Foreground="#22A892" Background="#E9EDF5" Margin="0,15,0,0" FlowDirection="LeftToRight"/>
+                        <TextBlock Text="اختر جهاز الإخراج نفسه المستخدم في تطبيق المكالمة. يمكنك التسجيل من تبويب التسجيل بالتزامن مع الترجمة." Foreground="#66748B" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <TextBlock x:Name="LiveStatus" Text="جاهز — الألمانية ← العربية" Foreground="#172C51" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <Button x:Name="OpenLiveLogButton" Grid.Column="1" Content="فتح النص المحفوظ" IsEnabled="False" Click="OpenLiveLog_Click" Padding="12,7" FontSize="12"/>
+                </Grid>
+                <ProgressBar x:Name="LiveSetupProgress" Height="5" Minimum="0" Maximum="100" Foreground="#345ADD" Background="#E9EDF5" Margin="0,0,0,12" FlowDirection="LeftToRight" Visibility="Collapsed"/>
+                <ListBox x:Name="LiveTranscriptList" Height="340" Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,0,12"/><Setter Property="Focusable" Value="False"/></Style></ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate><DataTemplate>
+                        <Border Background="White" CornerRadius="14" Padding="18">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Time}" FontSize="11" Foreground="#8090A8" FlowDirection="LeftToRight"/>
+                                <TextBlock Text="{Binding German}" FlowDirection="LeftToRight" Foreground="#66748B" FontSize="15" TextWrapping="Wrap" Margin="0,7,0,10"/>
+                                <TextBlock Text="{Binding Arabic}" FlowDirection="RightToLeft" Foreground="#172C51" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate></ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock x:Name="LiveLogLabel" Text="يُحفظ النص الألماني والعربي مع التوقيت في مجلد التسجيلات. الاستماع وحده لا يحفظ الصوت." Foreground="#2D6D50" FontSize="12" TextWrapping="Wrap" Margin="0,10,0,0"/>
+                <TextBlock Text="تظهر الترجمة بعد وقفة قصيرة أو نهاية المقطع، وقد تتأخر عدة ثوانٍ. الترجمة آلية وقد تخطئ، خصوصًا الأسماء أو الكلام المتداخل. تعمل محليًا على جهازك." Foreground="#66748B" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
+    </TabItem>
+    </TabControl>
+</Window>

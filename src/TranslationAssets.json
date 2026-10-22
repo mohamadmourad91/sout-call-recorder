@@ -1,0 +1,31 @@
+{
+  "Repository": "Helsinki-NLP/opus-mt-de-ar",
+  "Revision": "d5d9d874e996ff95c10a58bccaab541e5033022b",
+  "Assets": [
+    {
+      "Name": "encoder_model_quantized.onnx",
+      "Size": 51802822,
+      "Sha256": "d060bb170fda664e249080c0ba07c4f22d588d1863db3946852afcc8653b72a3"
+    },
+    {
+      "Name": "decoder_model_quantized.onnx",
+      "Size": 90909169,
+      "Sha256": "997bb40c077b948debb5fea4d97eb54d6b54ee15521d222b0f7fe749c65f5d76"
+    },
+    {
+      "Name": "source.spm",
+      "Size": 829134,
+      "Sha256": "19e06c77f81e26651b3d3f786dc4fde68a9f729fa3b735923e733b652bab965c"
+    },
+    {
+      "Name": "vocab.json",
+      "Size": 2129690,
+      "Sha256": "4658f167fe626761abdd4241aee3ee08d6d79340b3185c6b573c22d86dbd029e"
+    },
+    {
+      "Name": "config.json",
+      "Size": 1394,
+      "Sha256": "65989756ce30536ddaeea73db09970d57a29e6db8debc92eada3b7408fd39338"
+    }
+  ]
+}
